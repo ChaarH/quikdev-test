@@ -4,17 +4,13 @@ import Post from 'App/Models/Post'
 export default class ReportsController {
 
   async posts({}: HttpContextContract) {
-    const posts = await Post
+    let posts = await Post
                           .query()
-                          .select(['id', 'title'])
+                          .select('title')
                           .withCount('comment', (query) => {
                             query.as('total_comments')
-                          });
+                          }).orderBy('total_comments', 'desc');
 
-    let response = posts.map(function(post) {
-      return post.$extras.total_comments
-    })
-
-    return response
+    return {data: posts}
   }
 }

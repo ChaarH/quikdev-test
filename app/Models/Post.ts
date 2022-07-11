@@ -14,6 +14,12 @@ import User from 'App/Models/User'
 import Comment from './Comment'
 
 export default class Post extends BaseModel {
+  public serializeExtras() {
+    return {
+        total_comments: this.$extras.total_comments
+    }
+  }
+
   @column({ isPrimary: true })
   public id: number
 
@@ -34,6 +40,9 @@ export default class Post extends BaseModel {
 
   @column()
   public unlikes: number
+
+  @column()
+  public image: string
 
   @belongsTo(() => User)
   public user: BelongsTo<typeof User>

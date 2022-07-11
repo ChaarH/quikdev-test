@@ -1,6 +1,5 @@
-import { Application } from '@adonisjs/core/build/standalone';
+import Application from '@ioc:Adonis/Core/Application'
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
-import Database from '@ioc:Adonis/Lucid/Database';
 import Post from 'App/Models/Post'
 import CreatePostValidator from 'App/Validators/CreatePostValidator';
 
@@ -16,11 +15,9 @@ export default class PostsController {
     const data = await request.validate(CreatePostValidator)
     const userLogged = await auth.user!
 
-    const postImage = request.file('post_image')
-
-    // if (postImage) {
-    //   await postImage.move(Application.tmpPath('uploads'))
-    // }
+    if (request.file('image')) {
+      this.uploadFile(request.file('image'))
+    }
 
     const post = await Post.create({...data,userId: userLogged.id});
 
@@ -84,6 +81,13 @@ export default class PostsController {
     const posts = await Post.all();
 
     return {data: posts}
+  }
+
+  async uploadFile(file) {
+    const name = new Date().getTime()+"."+file.extname;
+    await file.move(Application.tmpPath('posts'), {name});
+    return name;
+
   }
 
   async incrementViews(id) {
