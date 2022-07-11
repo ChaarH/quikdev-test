@@ -1,5 +1,4 @@
 import { BaseMailer, MessageContract } from '@ioc:Adonis/Addons/Mail'
-import View from '@ioc:Adonis/Core/View';
 import User from 'App/Models/User';
 
 export default class NewCommentEmail extends BaseMailer {

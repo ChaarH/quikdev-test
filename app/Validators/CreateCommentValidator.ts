@@ -10,7 +10,9 @@ export default class CreateCommentValidator {
     description: schema.string([
       rules.required()
     ]),
-    post_id: schema.number()
+    post_id: schema.number([
+      rules.required()
+    ])
   })
 
   public messages: CustomMessages = {

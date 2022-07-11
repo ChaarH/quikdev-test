@@ -7,8 +7,7 @@ import {
   beforeFind,
   ModelQueryBuilderContract,
   hasMany,
-  HasMany,
-  beforeFetch
+  HasMany
 } from '@ioc:Adonis/Lucid/Orm'
 import User from 'App/Models/User'
 import Comment from './Comment'
