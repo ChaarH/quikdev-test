@@ -37,6 +37,9 @@ enail: user.test@gmail.com <br>
 password: 123456
 ***
 
+### Postman Collections
+As collections utilizadas durante o desenvolvimento, podem ser encontradas na `postman-collections-quikdev` <br>
+
 Para maiores informações dos comandos do Adonis, use o comando `node ace`, assim ele listará todos os comandos disponíveis
 
 
