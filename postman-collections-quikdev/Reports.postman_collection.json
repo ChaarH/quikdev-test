@@ -1,0 +1,58 @@
+{
+	"info": {
+		"_postman_id": "83182614-6fe9-4f93-b0f2-60f70182d0cf",
+		"name": "Reports",
+		"description": "Visualização das seguintes informações sobre os posts:\n- Título\n- Total de comentários\n- Total de curtidas\n- total de não curtidas",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "posts",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{URL}}/reports/posts",
+					"host": [
+						"{{URL}}"
+					],
+					"path": [
+						"reports",
+						"posts"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{TOKEN}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}
