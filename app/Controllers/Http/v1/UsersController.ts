@@ -13,14 +13,16 @@ export default class UsersController {
     const data = await request.validate(CreateUserValidator)
 
     const user = await User.create(data);
-    return {data: user};
+    return {message: 'Usuário cadastrado', data: user};
   }
 
   async show({params, response}: HttpContextContract) {
-    const user = await User.findOrFail(params.id);
+    const user = await User.find(params.id);
 
     if (!user) {
-      response.notFound();
+      return response
+        .status(404)
+        .json({'message': 'Usuário não encontrado'});
     }
 
     return {data: user};
@@ -29,25 +31,31 @@ export default class UsersController {
   async update({params, request, response}: HttpContextContract) {
     const data = request.only(['name', 'email','password']);
 
-    const user = await User.findOrFail(params.id);
+    const user = await User.find(params.id);
 
     if (!user) {
-      response.notFound();
+      return response
+        .status(404)
+        .json({'message': 'Usuário não encontrado'});
     }
 
     user.merge(data);
     await user.save();
 
-    return {data: user};
+    return {message: 'Usuário atualizado', data: user};
   }
 
   async destroy({params, response}: HttpContextContract) {
-    const user = await User.findOrFail(params.id);
+    const user = await User.find(params.id);
 
     if (!user) {
-      return response.notFound();
+      return response
+        .status(404)
+        .json({'message': 'Usuário não encontrado'});
     }
 
     await user.delete();
+
+    return response.noContent();
   }
 }

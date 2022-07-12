@@ -5,61 +5,80 @@ import CreatePostValidator from 'App/Validators/CreatePostValidator';
 
 export default class PostsController {
 
-  async index({}: HttpContextContract) {
-    const posts = await Post.all();
-
+  async index({request}: HttpContextContract) {
+    const {page, per_page} = await request.only(['page','per_page']);
+    const posts = await Post.query().paginate(page?? 1, per_page?? 2);
     return {data: posts};
   }
 
   async store({request, auth}: HttpContextContract) {
-    const data = await request.validate(CreatePostValidator)
+    const {title, description} = await request.validate(CreatePostValidator)
     const userLogged = await auth.user!
 
+    let newNameFile;
     if (request.file('image')) {
-      this.uploadFile(request.file('image'))
+      newNameFile = await this.uploadFile(request.file('image'));
     }
 
-    const post = await Post.create({...data,userId: userLogged.id});
+    const post = await Post.create({
+      userId: userLogged.id,
+      title,
+      description,
+      image: newNameFile
+    });
 
-    return {data: post};
+    return {message: 'Post cadastrado', data: post};
   }
 
   async show({params, response}: HttpContextContract) {
-    const post = await Post.findOrFail(params.id);
+    const post = await Post.query().where('id', params.id)
+      .withCount('reaction', (query) => {
+        query.where('liked', 'LIKED').as('total_likes')
+      })
+      .withCount('reaction', (query) => {
+        query.where('liked', 'UNLIKED').as('total_unlikes')
+      });
 
     if (!post) {
-      response.notFound();
+      return response
+        .status(404)
+        .json({'message': 'Post não encontrado'});
     }
 
-    this.incrementViews(params.id)
+    this.incrementViews(params.id);
 
     return {data: post};
   }
 
   async update({params, request, response, auth}: HttpContextContract) {
-    const data = request.only(['title', 'description', 'liked']);
-    const post = await Post.findOrFail(params.id);
+    const {title, description} = request.only(['title', 'description']);
+    const post = await Post.find(params.id);
 
     if (!post) {
-      return response.notFound();
+      return response
+        .status(404)
+        .json({'message': 'Post não encontrado'});
     }
 
     const userLogged = await auth.user!
 
     if (userLogged.id !== post.userId) {
-      return response.unauthorized();
+      return response
+        .status(401)
+        .json({'message': 'Você não tem permissão para realizar esta ação'});
     }
 
     if (!post) {
-      response.notFound();
+      return response
+        .status(404)
+        .json({'message': 'Post não encontrado'});
     }
 
-    post.merge(data);
+    post.merge({title, description});
 
-    this.updateLikedOrUnliked(params.id, data.liked)
     await post.save();
 
-    return {data: post};
+    return {message: 'Post atualizado', data: post};
   }
 
   async destroy({params, response, auth}: HttpContextContract) {
@@ -67,14 +86,20 @@ export default class PostsController {
     const userLogged = await auth.user!
 
     if (!post) {
-      return response.notFound();
+      return response
+        .status(404)
+        .json({'message': 'Post não encontrado'});
     }
 
     if (userLogged.id !== post.userId) {
-      return response.unauthorized();
+      return response
+        .status(401)
+        .json({'message': 'Você não tem permissão para realizar esta ação'});
     }
 
     await post.delete();
+
+    return response.noContent();
   }
 
   async report({}: HttpContextContract) {
@@ -84,10 +109,9 @@ export default class PostsController {
   }
 
   async uploadFile(file) {
-    const name = new Date().getTime()+"."+file.extname;
-    await file.move(Application.tmpPath('posts'), {name});
-    return name;
-
+    const newName = new Date().getTime()+"."+file.extname;
+    await file.move(Application.tmpPath('posts'), {name: newName});
+    return newName;
   }
 
   async incrementViews(id) {
@@ -95,15 +119,5 @@ export default class PostsController {
       .query()
       .where('id', id)
       .increment('views', 1);
-  }
-
-  async updateLikedOrUnliked(id, action) {
-    console.log(`Post de id ${id} like: ${action}`)
-    const column = action ? 'likes' : 'unlikes';
-
-    await Post
-      .query()
-      .where('id', id)
-      .increment(`${column}`, 1)
   }
 }
