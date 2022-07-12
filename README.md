@@ -7,101 +7,36 @@ Por ter experiência como programador PHP, e utilizar do Laravel para desenvolvi
 
 Tenho estudado este framework nos últimos meses. Por ter experiência prévia com o Laravel e o Adonis ser inspirado em sua estrtutura, a curva de aprendizado foi muito tranquila.
 
-Não vejo a hora de poder utilizá-lo em um projeto real!
 Bom, vamos lá!
 
 ## Começando
 
-**Para maiores de talhes sobre o framework, leia a <a href="https://docs.adonisjs.com/guides/introduction">documentação do Adonis</a>**
+**Para maiores detalhes sobre o framework, leia a <a href="https://docs.adonisjs.com/guides/introduction">documentação do Adonis</a>**
 
 ### Configuração do ambiente
 ***
 
-**Para configuração do ambiente é necessário ter o [Docker](https://docs.docker.com/desktop/) instalado em sua máquina.**
+Dentro da pasta do projeto, rode os seguintes comandos:
+- ``json npm install`` para poder baixar todos os pacotes necessários
+- `cp .env.example .env` para copiar o arquivo de environment
 
-Dentro da pasta do projeto, rode o seguinte comando: `docker-compose up -d`.
+- Lembre-se de setar as varíaveis do Banco de dados e outros serviços(como SMTP) no arquivo `.env`
 
-Copie o arquivo `.env.example` a renomeie para `.env` dentro da pasta raíz da aplicação.
+- `node ace migration:run` para rodar todas as migrations e criar as tabelas do projeto
+- `node ace db:seed UserSeeder` para rodar o Seeder que irá gerar alguns usuários e posts iniciais
 
-```bash
-cp .env.example .env
-```
+- `node ace serve --watch` para iniciar o servidor
 
-Após criar o arquivo `.env`, será necessário acessar o container da aplicação para rodar alguns comandos de configuração do Laravel.
+***
+Se você não alterou nenhuma configuração de server, o projeto estará rodando na url `http://127.0.0.1:3333`
 
-Para acessar o container use o comando `docker exec -it yampi_test_app sh`.
+URL da api: `http://127.0.0.1:3333/api/v1/`
 
-Digite os seguintes comandos dentro do container:
+Usuário de acesso: <br>
+enail: user.test@gmail.com <br>
+password: 123456
+***
 
-```bash
-composer install
-php artisan key:generate
-php artisan migrate
-```
+Para maiores informações dos comandos do Adonis, use o comando `node ace`, assim ele listará todos os comandos disponíveis
 
-Após rodar esses comandos, seu ambiente estará pronto para começar o teste.
-
-Para acessar a aplicação, basta acessar `localhost:8000`
-
-### Funcionalidades a serem implementadas
-
-**Essa aplicação deverá se comportar como uma API REST, onde será consumida por outros sistemas. Nesse teste você deverá se preocupar em constriuir somente a API**. 
-
-##### CRUD produtos
-
-Aqui você deverá desenvolver as principais operações para o gerenciamento de um catálogo de produtos, sendo elas:
-
-- Criação
-- Atualização
-- Exclusão
-
-O produto deve ter a seguinte estrutura:
-
-Campo       | Tipo      | Obrigatório   | Pode se repetir
------------ | :------:  | :------:      | :------:
-id          | int       | true          | false
-name        | string    | true          | false        
-price       | float     | true          | true
-decription  | text      | true          | true
-category    | string    | true          | true
-image_url   | url       | false         | true
-
-Os endpoints de criação e atualização devem seguir o seguinte formato de payload:
-
-```json
-{
-    "name": "product name",
-    "price": 109.95,
-    "description": "Neque porro quisquam est qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit...",
-    "category": "test",
-    "image": "https://fakestoreapi.com/img/81fPKd-2AYL._AC_SL1500_.jpg"
-}
-```
-
-**Importante:** Tanto os endpoints de criação é atualização, deverão ter uma camada de validação dos campos.
-
-##### Buscas de produtos
-
-Para realizar a manutenção de um catálogo de produtos é necessário que o sistema tenha algumas buscas, sendo elas:
-
-- Busca pelos campos `name` e `category` (trazer resultados que batem com ambos os campos).
-- Busca por uma categoria específica.
-- Busca de produtos com e sem imagem.
-- Buscar um produto pelo seu ID único.
-
-##### Importação de produtos de uma API externa
-
-É necessário que o sistema seja capaz de importar produtos que estão em um outro serviço. Deverá ser criado um comando que buscará produtos nessa API e armazenará os resultados para a sua base de dados. 
-
-Sugestão: `php artisan products:import`
-
-Esse comando deverá ter uma opção de importar um único produto da API externa, que será encontrado através de um ID externo.
-
-Sugestão: `php artisan products:import --id=123`
-
-Utilize a seguinte API para importar os produtos: [https://fakestoreapi.com/docs](https://fakestoreapi.com/docs)
-
----
-
-Se houver dúvidas, por favor, abra uma issue nesse repositório. Ficaremos felizes em ajudá-lo ou até mesmo melhorar essa documentação.
 

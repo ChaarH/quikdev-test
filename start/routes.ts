@@ -4,7 +4,7 @@ Route.group(() => {
   Route.post('/login', 'AuthController.login');
   Route.post('/logout', 'AuthController.logout');
 })
-.prefix('/api/auth')
+.prefix('/api/v1/auth')
 
 Route.group(() => {
   Route.get('/auth/me', 'AuthController.me');
@@ -16,6 +16,6 @@ Route.group(() => {
 
   Route.get('/reports/posts', 'v1/ReportsController.posts');
 })
-.prefix('/api')
+.prefix('/api/v1')
 .middleware('auth')
 
